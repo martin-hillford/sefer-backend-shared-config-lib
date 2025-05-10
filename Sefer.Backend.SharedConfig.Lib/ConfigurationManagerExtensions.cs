@@ -21,6 +21,20 @@ public static class ConfigurationManagerExtensions
         return builder;
     }
     
+    /// <summary>
+    /// Add the shared config to the builder
+    /// </summary>
+    /// <remarks>
+    /// Although WebApplicationBuilder implements IHostApplicationBuilder this extension method is helpful because then
+    /// the chaining is easier because WebApplicationBuilder contains the Build() method.
+    /// </remarks>
+    public static WebApplicationBuilder WithSharedConfig(this WebApplicationBuilder builder)
+    {
+        builder.Configuration.AddInfrastructureConfiguration();
+        builder.Services.AddSeferInfrastructure();
+        return builder;
+    }
+    
     public static IConfigurationManager AddInfrastructureConfiguration(this IConfigurationManager manager)
     {
         var storageUri = manager.GetConfigStore();
