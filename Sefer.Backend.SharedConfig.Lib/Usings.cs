@@ -3,7 +3,6 @@ global using Sefer.Backend.SharedConfig.Lib.Abstractions;
 global using Sefer.Backend.SharedConfig.Lib.Models;
 global using System.Text.Json.Serialization;
 global using Sefer.Backend.SharedConfig.Lib.Config;
-global using Sefer.Backend.SharedConfig.Lib.Models;
 global using Sefer.Backend.SharedConfig.Lib.Providers;
 global using System.Text.Json.Nodes;
 global using Azure.Storage.Blobs;
