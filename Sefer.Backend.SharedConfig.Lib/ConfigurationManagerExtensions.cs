@@ -3,23 +3,20 @@ namespace Sefer.Backend.SharedConfig.Lib;
 [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
 public static class ConfigurationManagerExtensions
 {
-    public static IServiceCollection AddSeferInfrastructure(this IServiceCollection services)
-    {
-        services.AddSingleton<INetworkProvider, NetworkProvider>();
-        return services;
-    }
-
+    /// <summary>
+    /// Gets the network provider. This provider can return all kinds of info on the
+    /// connected sites and regions
+    /// </summary>
     public static INetworkProvider GetNetworkProvider(this IServiceProvider serviceProvider)
     {
         return serviceProvider.GetService<INetworkProvider>()!;
     }
 
+    /// <summary>
+    /// Add the shared config to the builder
+    /// </summary>
     public static IHostApplicationBuilder WithSharedConfig(this IHostApplicationBuilder builder)
-    {
-        builder.Configuration.AddInfrastructureConfiguration();
-        builder.Services.AddSeferInfrastructure();
-        return builder;
-    }
+        => builder.AddSharedConfig();
     
     /// <summary>
     /// Add the shared config to the builder
@@ -30,29 +27,20 @@ public static class ConfigurationManagerExtensions
     /// </remarks>
     public static WebApplicationBuilder WithSharedConfig(this WebApplicationBuilder builder)
     {
-        builder.Configuration.AddInfrastructureConfiguration();
-        builder.Services.AddSeferInfrastructure();
+        builder.AddSharedConfig();
         return builder;
     }
     
-    public static IConfigurationManager AddInfrastructureConfiguration(this IConfigurationManager manager)
+    // This method is actually adding the providers to the 
+    private static IHostApplicationBuilder AddSharedConfig(this IHostApplicationBuilder builder)
     {
-        var storageUri = manager.GetConfigStore();
-        if (storageUri.StartsWith("file://"))
-        {
-            manager.Add(new Providers.FileConfigurationSource(storageUri));
-        }
-        else
-        {
-            manager.Add(new InfraConfigurationSource(storageUri));
-        }
-        return manager;
-    }
-    
-    public static string GetConfigStore(this IConfigurationManager manager)
-    {
-        return
-            EnvVar.GetEnvironmentVariable("CONFIG_STORAGE") ??
-            manager.GetValue<string>("ConfigStorage");
+        var provider = new ConfigProvider(builder);
+        var providers = provider.GetProviders();
+        if (providers == null) return builder;
+
+        builder.Configuration.Add(providers.ConfigurationSource);
+        var networkProvider = new NetworkProvider(providers.FrontendConfigProvider, providers.BackendConfigProvider);
+        builder.Services.AddSingleton<INetworkProvider>(networkProvider);
+        return builder;
     }
 }

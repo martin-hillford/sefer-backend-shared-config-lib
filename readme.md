@@ -16,10 +16,16 @@ and reducing the risk of configuration drift.
 In scenarios where microservices are running on different systems or environments, the library offers an alternative 
 approach through a dedicated configuration endpoint. This allows services to retrieve their configuration settings 
 dynamically over the network, ensuring that each service can access the most up-to-date configuration without the need 
-for manual updates.
+for manual updates. Currently, an Azure BlobContainer is required.
 
 ## Usage
-To use this library please include the Sefer.Backend.SharedConfig.Lib NuGet package.
+To use this library please include the Sefer.Backend.SharedConfig.Lib NuGet package. Additional two configuration variables
+are required. They can be set either through the appSettings.json file or through an Environment variable:
+
+| AppSettings Variable | Environment Variable   | Values                                                            |
+|----------------------|------------------------|-------------------------------------------------------------------|
+| SharedConfigStore    | SHARED_CONFIG_STORE    | azure, local-file or endpoint                                     |
+| SharedConfigLocation | SHARED_CONFIG_LOCATION | The url (for azure and endpoint) or the folder on the file system |
 
 ## License 
 GPL-3.0-or-later
